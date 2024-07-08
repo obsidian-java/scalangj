@@ -3,7 +3,9 @@
 .metals
 .scalafmt.conf
 target
-project
 .bloop
 .bsp
 out
+/project/project
+build.properties
+metals.sbt
