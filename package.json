@@ -1,0 +1,38 @@
+{
+	"name": "scalangj",
+	"displayName": "scalangj",
+	"description": "Generates the AST of a program.",
+	"version": "0.0.1",
+	"engines": {
+		"vscode": "^1.84.0"
+	},
+	"publisher": "luzhuomi",
+	"categories": [
+		"Other"
+	],
+	"activationEvents": [
+		
+	],
+	"main": "./out/extension",
+	"contributes": {
+		"commands": [
+			{
+				"command": "extension.helloWorld",
+				"title": "Hello World"
+			},
+			{
+				"command": "extension.getAST",
+				"title": "Generate AST"
+			}
+		]
+	},
+	"menus": {
+		"editor/context": [
+			{
+				"when": "editorHasSelection",
+				"command": "extension.getAST",
+				"group": "navigation"
+			}
+		]
+	}
+}

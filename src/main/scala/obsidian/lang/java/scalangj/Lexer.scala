@@ -4,7 +4,8 @@ import scala.util.matching.Regex
 import scala.util.parsing.combinator.RegexParsers
 import scala.util.parsing.combinator.*
 import scala.util.parsing.combinator.lexical.*
-import org.apache.commons.text.StringEscapeUtils.*
+//import org.apache.commons.text.StringEscapeUtils.*
+import scala.StringContext
 import scala.util.parsing.input.Positional
 import obsidian.lang.java.scalangj.*
 import scala.util.parsing.input.CharArrayReader.EofCh
@@ -234,7 +235,8 @@ object Lexer extends Lexical with Positional with JavaTokens with RegexParsers {
 
   def isOctDigit(c: Char): Boolean = octs(c)
 
-  def toEnum(s: String): Char = unescapeJava(s).charAt(0)
+  //def toEnum(s: String): Char = unescapeJava(s).charAt(0)
+  def toEnum(s: String): Char = StringContext.processEscapes(s).charAt(0)
 
   def convChar(s: String): String = convChar1(s.toList).mkString
 
