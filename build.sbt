@@ -130,7 +130,7 @@ lazy val root = project
   .in(file("."))
   .settings(
     scalaVersion := "3.3.1",
-    moduleName := "vscode-scalajs-hello",
+    moduleName := "scalangj",
     Compile / fastOptJS / artifactPath := baseDirectory.value / "out" / "extension.js",
     Compile / fullOptJS / artifactPath := baseDirectory.value / "out" / "extension.js",
     open := openVSCodeTask.dependsOn(Compile / fastOptJS).value,
