@@ -16,7 +16,7 @@ import obsidian.lang.java.scalangj.Pretty.prettyPrint
 import typings.std.PromiseLike
 
 object extension {
-  @JSExportTopLevel("activate")
+  @JSExportTopLevel("activates") // should be "activate" but it'll clash with Obsidian's VSCode extension implementation
   def activate(context: vscode.ExtensionContext): Unit = {
 
     println(
