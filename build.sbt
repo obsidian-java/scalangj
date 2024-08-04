@@ -19,11 +19,7 @@ libraryDependencies += "org.scalactic" %% "scalactic" % "3.2.9"
 
 libraryDependencies += "org.scalatest" %% "scalatest" % "3.2.9" % "test"
 
-//libraryDependencies += "org.apache.commons" % "commons-text" % "1.9"
-
 libraryDependencies += "org.typelevel" %%% "paiges-core" % "0.4.2"
-
-// scalacOptions ++= Seq("-feature", "-deprecation", "-Yresolve-term-conflict:package")
 
 // for publishing to github
 
@@ -68,7 +64,7 @@ pomExtra := (
     </developer>
   </developers>)
 
-/*
+// the following code is to enable Scala.js
 import org.scalajs.linker.interface.ModuleSplitStyle
 
 lazy val livechart = project.in(file("."))
@@ -96,54 +92,4 @@ lazy val livechart = project.in(file("."))
      * It provides static types for the browser DOM APIs.
      */
     libraryDependencies += "org.scala-js" %%% "scalajs-dom" % "2.4.0",
-  ) */
-
-import scala.sys.process._
-
-lazy val installDependencies = Def.task[Unit] {
-  val base = (ThisProject / baseDirectory).value
-  val log = (ThisProject / streams).value.log
-  if (!(base / "node_module").exists) {
-    val pb =
-      new java.lang.ProcessBuilder("npm", "install")
-        .directory(base)
-        .redirectErrorStream(true)
-
-    pb ! log
-  }
-}
-
-lazy val open = taskKey[Unit]("open vscode")
-def openVSCodeTask: Def.Initialize[Task[Unit]] =
-  Def
-    .task[Unit] {
-      val base = (ThisProject / baseDirectory).value
-      val log = (ThisProject / streams).value.log
-
-      val path = base.getCanonicalPath
-      s"code --extensionDevelopmentPath=$path" ! log
-      ()
-    }
-    .dependsOn(installDependencies)
-
-lazy val root = project
-  .in(file("."))
-  .settings(
-    scalaVersion := "3.3.1",
-    moduleName := "scalangj",
-    Compile / fastOptJS / artifactPath := baseDirectory.value / "out" / "extension.js",
-    Compile / fullOptJS / artifactPath := baseDirectory.value / "out" / "extension.js",
-    open := openVSCodeTask.dependsOn(Compile / fastOptJS).value,
-    libraryDependencies ++= Seq(
-      // ScalablyTyped.V.vscode,
-      "com.lihaoyi" %%% "utest" % "0.8.2" % "test"
-    ),
-    Compile / npmDependencies ++= Seq("@types/vscode" -> "1.84.1"),
-    testFrameworks += new TestFramework("utest.runner.Framework")
-    // publishMarketplace := publishMarketplaceTask.dependsOn(fullOptJS in Compile).value
-  )
-  .enablePlugins(
-    ScalaJSPlugin,
-    ScalaJSBundlerPlugin,
-    ScalablyTypedConverterPlugin
   )
