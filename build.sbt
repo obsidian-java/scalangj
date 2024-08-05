@@ -11,7 +11,7 @@ ThisBuild / resolvers += "clojars" at "https://clojars.org/repo"
 ThisBuild / organization := "obsidian.lang.java"
 ThisBuild / publishMavenStyle := true
 
-publishTo := Some(Resolver.file("mavenLocal",  new File(Path.userHome.absolutePath+"/obsidian-java/binrepo/")))
+publishTo in ThisBuild := Some(Resolver.file("mavenLocal",  new File(Path.userHome.absolutePath+"/obsidian-java/binrepo/")))
 
 //publishArtifact in Test := false
 Test / publishArtifact := false
@@ -49,14 +49,15 @@ ThisBuild / scalaVersion := "3.3.1"
 lazy val root = project.in(file(".")).
   aggregate(scalangj.js, scalangj.jvm).
   settings(
-    publish := {},
+    publish := {
+    },
     publishLocal := {},
   )
 
 lazy val scalangj = crossProject(JSPlatform, JVMPlatform).in(file(".")).
   settings(
     name := "scalangj",
-    version := "0.1.6",
+    version := "0.1.7",
     libraryDependencies ++= Seq(
       "org.scala-lang.modules" %%% "scala-parser-combinators" % "2.3.0",
       "org.scalactic" %%% "scalactic" % "3.2.9",
