@@ -86,11 +86,12 @@ object Pretty {
             case ClassDecl_(mods,ident,tParams,mSuper,impls,body) => {
                 val p1 = hsep(mods.map(ops.prettyPrec(p,_)))
                 val p2 = text("class")
-                val p3 = ppTypeParams(p,tParams)
-                val p4 = ppExtends(p, maybe(Nil, (x:RefType)=>List(x), mSuper))
-                val p5 = ppImplements(p,impls)
-                val p6 = ops.prettyPrec(p,body)
-                stack(List(hsep(List(p1,p2,p3,p4,p5)),p6))
+                val p3 = ops.prettyPrec(p,ident)
+                val p4 = ppTypeParams(p,tParams)
+                val p5 = ppExtends(p, maybe(Nil, (x:RefType)=>List(x), mSuper))
+                val p6 = ppImplements(p,impls)
+                val p7 = ops.prettyPrec(p,body)
+                stack(List(hsep(List(p1,p2,p3,p4,p5,p6)),p7))
             }
         }
     }
