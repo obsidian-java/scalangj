@@ -1,5 +1,5 @@
 name := "scalangj"
-version := "0.1.7"
+version := "0.1.8"
 
 Global / sbtVersion := "1.8.2"
 
@@ -57,7 +57,7 @@ lazy val root = project.in(file(".")).
 lazy val scalangj = crossProject(JSPlatform, JVMPlatform).in(file(".")).
   settings(
     name := "scalangj",
-    version := "0.1.7",
+    version := "0.1.8",
     libraryDependencies ++= Seq(
       "org.scala-lang.modules" %%% "scala-parser-combinators" % "2.3.0",
       "org.scalactic" %%% "scalactic" % "3.2.9",
