@@ -305,3 +305,61 @@ class TestParser15 extends funsuite.AnyFunSuite with matchers.should.Matchers {
     }
   }
 }
+
+
+class TestParser16 extends funsuite.AnyFunSuite with matchers.should.Matchers {
+  val STRING = """
+public class Test
+{
+    public static int f() {
+        int x; 
+        int s;
+        x = 0;
+        s = 0;
+        while (x < 10) {
+            s = x + s;
+            x = x + 1;
+        }
+        return s:
+    }
+}
+  """
+  // val DECL: Some[MemberDecl_] = Some(MemberDecl_(MethodDecl(List(Public, Static),List(),None,Ident("main"),List(FormalParam(List(),RefType_(ArrayType(RefType_(ClassRefType(ClassType(List((Ident("String"),List()))))))),false,VarId(Ident("args")))),List(),None,MethodBody(Some(Block(List(LocalVars(List(),PrimType_(IntT),List(VarDecl(VarId(Ident("x")),Some(InitExp(Lit(IntLit(0))))))), BlockStmt_(Do(StmtBlock(Block(List())),Lit(BooleanLit(true)))))))))))
+  test("testParser16") {
+    val result = nonEmptyCompilationUnit(new Lexer.Scanner(STRING))
+    result match {
+      case Error(msg, next) => fail(msg)
+      case Failure(msg, next) => 
+        println(s"error: ${msg}")
+        succeed
+      case Success(dec, next) => fail("the parsing should fail, but Success is returend.") // && (result.get === LOCALVARDECL))    
+    }
+  }
+}
+
+
+class TestParser17 extends funsuite.AnyFunSuite with matchers.should.Matchers {
+  val STRING = """
+public class Test
+{
+    public static int f() {
+        int x; 
+        int s;
+        x = 0;
+        s = 0;
+        while (x < 10) {
+            s = x + s;
+            x = x + 1;
+        }
+        return s;
+    }
+}"""
+  test("testParser17") {
+    val result = nonEmptyCompilationUnit(new Lexer.Scanner(STRING))
+    result match {
+      case Error(msg, next) => fail(msg)
+      case Failure(msg, next) => fail(msg)
+      case Success(dec, next) => assert(result.successful)
+    }
+  }
+}

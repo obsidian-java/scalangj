@@ -21,14 +21,15 @@ object Parser extends Parsers {
     */
     def parseCompilationUnit(s:String): Either[ErrorMessage, CompilationUnit] = {
         compilationUnit(new Lexer.Scanner(s)) match {
-            case Success(cu, _) => Right(cu)
+            case Success(cu, rest) if rest.atEnd => Right(cu)
+            case Success(cu, next) => Left("parseCompilationUnit failed because the input is not parsed entirely.")
             case Error(msg, next) => Left(msg)
             case Failure(msg, next) => Left(msg)
         }
     }
 
     /**
-    * The main function. Parsing a compilation unit. 
+    * The main function. Parsing a compilation unit from a file. 
     * @param file
     *  
     */
@@ -44,18 +45,46 @@ object Parser extends Parsers {
     }
 
 
+    /**
+    * The main function. Parsing a non empty compilation unit. 
+    * @param s
+    *  
+    */
+    def parseNonEmptyCompilationUnit(s:String): Either[ErrorMessage, CompilationUnit] = {
+        nonEmptyCompilationUnit(new Lexer.Scanner(s)) match {
+            case Success(cu, rest) => Right(cu)
+            case Error(msg, next) => Left(msg)
+            case Failure(msg, next) => Left(msg)
+        }
+    }
+
+    // this version is the same as the Haskell counter-part.
+    // should not use this one, it does not work with normal Java String
+    // which has no EOF.
+    def compilationUnitEOF: Parser[CompilationUnit] = {
+        opt(packageDecl) ~ rep(importDecl) ~ rep(typeDecl) ~ EOF ^^ { 
+            case mpd ~ ids ~ tds ~ _ => CompilationUnit(mpd, ids, tds.flatMap(x => x)) 
+        }
+    }
+    
+    // this version is the relaxed version of the above (compilationUnitEOF) 
+    // where we don't check for EOF, but it is too relaxed, as it
+    // might produce an empty CompilationUnit, hence the real 
+    // parse error will be ignored.
     def compilationUnit: Parser[CompilationUnit] = {
         opt(packageDecl) ~ rep(importDecl) ~ rep(typeDecl) ^^ { 
             case mpd ~ ids ~ tds  => CompilationUnit(mpd, ids, tds.flatMap(x => x)) 
         }
     }
-    /*
-    def compilationUnit: Parser[CompilationUnit] = {
-        opt(packageDecl) ~ rep(importDecl) ~ rep(typeDecl) ~ EOF ^^ { 
-            case mpd ~ ids ~ tds ~ _ => CompilationUnit(mpd, ids, tds.flatMap(x => x)) 
+    
+    // this version is a middle ground, enforcing, we should have
+    // at least 1 type declration in a compilation unit.
+    def nonEmptyCompilationUnit: Parser[CompilationUnit] = {
+        opt(packageDecl) ~ rep(importDecl) ~ rep1(typeDecl) ^^ { 
+            case mpd ~ ids ~ tds  => CompilationUnit(mpd, ids, tds.flatMap(x => x)) 
         }
     }
-    */
+
     
     def packageDecl:Parser[PackageDecl] = { 
         tok(KW_Package("package")) ~ name ~ semiColon ^^  {
