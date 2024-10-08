@@ -363,3 +363,27 @@ public class Test
     }
   }
 }
+
+class TestParser18 extends funsuite.AnyFunSuite with matchers.should.Matchers {
+  val STRING = """
+    public static int f() {
+        int x; 
+        int s;
+        x = 0;
+        s = 0;
+        while (x < 10) {
+            s = x + s;
+            x = x + 1;
+        }
+        return s;
+    }
+  """
+  test("testParser18") {
+    val result = methodDeclUnit(new Lexer.Scanner(STRING))
+    result match {
+      case Error(msg, next) => fail(msg)
+      case Failure(msg, next) => fail(msg)
+      case Success(dec, next) => assert(result.successful)
+    }
+  }
+}

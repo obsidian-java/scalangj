@@ -58,6 +58,14 @@ object Parser extends Parsers {
         }
     }
 
+    def parseMethod(s:String): Either[ErrorMessage, MethodDecl] = {
+        methodDeclUnit(new Lexer.Scanner(s)) match {
+            case Success(cu, rest) => Right(cu)
+            case Error(msg, next) => Left(msg)
+            case Failure(msg, next) => Left(msg)
+        }
+    }
+
     // this version is the same as the Haskell counter-part.
     // should not use this one, it does not work with normal Java String
     // which has no EOF.
@@ -84,7 +92,26 @@ object Parser extends Parsers {
             case mpd ~ ids ~ tds  => CompilationUnit(mpd, ids, tds.flatMap(x => x)) 
         }
     }
-
+    
+    def methodDeclUnit:Parser[MethodDecl] = {
+        pMember >> {
+            om => { om match {
+                    case Some(m) => {
+                        m match {
+                            case MemberDecl_(member) => {
+                                member match {
+                                    case member: MethodDecl => success(member)
+                                    case _ => failure ("Not a method declaration")
+                                }
+                            }
+                            case _ => failure ("Not a method declaration")
+                        }
+                    }
+                    case None => failure ("Not a method declaration")
+                }
+            }
+        }
+    }
     
     def packageDecl:Parser[PackageDecl] = { 
         tok(KW_Package("package")) ~ name ~ semiColon ^^  {
@@ -209,12 +236,13 @@ object Parser extends Parsers {
                 case ( mst ~ blk) => Some(InitDecl(mst,blk))
             }
         }
-        def pMember:Parser[Option[Decl]] = {
-            list(modifier) ~ memberDecl ^^ {
-                case ( ms ~ dec ) => Some(MemberDecl_(dec(ms)))
-            }
-        }
         pNothing | pInit | pMember
+    }
+
+    def pMember:Parser[Option[Decl]] = {
+        list(modifier) ~ memberDecl ^^ {
+            case ( ms ~ dec ) => Some(MemberDecl_(dec(ms)))
+        }
     }
 
     def memberDecl:Parser[Mod[MemberDecl]] = {
